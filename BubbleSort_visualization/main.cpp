@@ -8,32 +8,26 @@
 
 #pragma comment(lib, "Msimg32.lib")
 
-/*
-Визуализация пузырьковой сортировки.
-Давайте хранить массив случайных чисел, каждое число - высота прямоугольника. Ширина каждого прямоугольника - фиксированная.
-В зависимости от того, какое число в массиве - рисуем прямоугольник той или иной высоты
-*/
+const int MAX_RECTANGLES = 20;
+const int x_start = 100;
+const int y_start = 400;
+const int RECT_WIDTH = 20;
+const int MAX_HEIGHT = 200;
 
-const int MAX_RECTANGLES = 10;
-const int x_start = 100;                    //Левая граница прямоугольников
-const int y_start = 400;                    //Нижняя граница прямоугольников
-const int RECT_WIDTH = 20;                  //Ширина прямоугольника
-const int MAX_HEIGHT = 200;                 //Максимальная высота прямоугольника
+const int WIDTH = 800;
+const int HEIGHT = 700;
 
-const int WIDTH = 800;                      //Ширина окна
-const int HEIGHT = 700;                     //Высота окна
-
-int arr[MAX_RECTANGLES];                    //Массив высот прямоугольников
+int arr[MAX_RECTANGLES];
 
 
-void draw_rectangles(int color);            //Рисует все прямоугольники
-bool is_sorted();                           //Проверяет, отсортирован массив или нет
-void bubble_sort_iteration(int j);          //Делает одну итерацию сортировки пузырьком (если arr[j] > arr[j + 1] - меняет местами)
-void random_fill_array();                   //Заполняет массив случайными числами от 0 до MAX_HEIGHT
-bool is_clicked();
+void draw_rectangles(int color);            
+bool is_sorted();                           
+void bubble_sort_iteration(int j);          
+void random_fill_array();                  
 
-void random_shuffle();                      //Перемешивание массива
-int random_color();                         //Функция возвращает случайный цвет
+
+void random_shuffle();                      
+int random_colour();                         
 
 
 void draw_rectangles(int color) {
@@ -66,7 +60,7 @@ void bubble_sort_iteration(int j) {
     }
 }
 
-int random_color() {
+int random_colour() {
     int r = rand() % 256;
     int g = rand() % 256;
     int b = rand() % 256;
@@ -78,63 +72,53 @@ void random_shuffle() {
         std::swap(arr[i], arr[std::rand() % MAX_RECTANGLES]);
     }
 }
-/*
-TODO:
-Сделать 3 кнопки.
-При нажатии на 1 кнопку - должен меняться цвет на случайный
-При нажатии на 2 кнопку - массив перемешивается
-При нажатии на 3 кнопку - массив заново заполняется
-Для каждой кнопки нужна своя функция is_clicked.
-is_clicked_1()
-is_clicked_2()
-is_clicked_3()
-*/
+
 
 
 int main() {
     srand(time(0));
     random_fill_array();
 
-    initwindow(WIDTH, HEIGHT, "Анимация", 0, 0, true); // режим 2-страниц
+    initwindow(WIDTH, HEIGHT, "Bubble sort  visualization", 0, 0, true);
     create_control(0, HEIGHT - 100, 100, HEIGHT, CHANGE_COLOR);
     create_control(100, HEIGHT - 100, 200, HEIGHT, ARRAY_SHUFFLE);
     create_control(200, HEIGHT - 100, 300, HEIGHT, REFILL_ARRAY);
 
-    int pos = 0;        //Текущая позиция
+    int pos = 0;
+    int colour = RGB(57, 47, 80);
 
     while (true) {
-        setbkcolor(BLACK); // цвет фона
-        clearviewport(); // закраска текущей страницы цветом фона
+        setbkcolor(BLACK);
+        clearviewport();
 
-        draw_rectangles(RGB(57, 47, 80));
+        draw_rectangles(colour);
         draw_buttons();
-        random_color();
+
 
         if (!is_sorted()) {
             bubble_sort_iteration(pos);
             pos = (pos + 1) % (MAX_RECTANGLES - 1);
         }
 
-        //Обработка нажатий на клавиши
+
         if (mousebuttons() == 1) {
             int button = select_control();
 
-            if (button == CHANGE_COLOR) {
-                draw_rectangles(random_color());
+            if (button == CHANGE_COLOR) {            
+                colour = random_colour();
             }
-
-            else if (button == ARRAY_SHUFFLE) {
+            else if (button == ARRAY_SHUFFLE) {     
                 random_shuffle();
             }
-            else if (button == REFILL_ARRAY) {
-                random_fill_array;
+            else if (button == REFILL_ARRAY) {       
+                random_fill_array();
             }
         }
 
         swapbuffers();
-        delay(30);
+        delay(10);
 
-        //Определяет, была ли нажата клавиша но не ожидает ее считывания
+
         if (kbhit()) {
             int key = getch();
             if (key == KEY_ESC) {
